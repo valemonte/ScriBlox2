@@ -1,0 +1,612 @@
+local e=game:GetService( "Players" )
+local r=game:GetService( "Workspace" )
+local y=game:GetService( "RunService" )
+local u=game:GetService( "TweenService" )
+local w=game:GetService( "UserInputService" )
+local j=game:GetService( "ReplicatedStorage" )
+local k=game:GetService( "ProximityPromptService" )
+local a=game:GetService( "HttpService" )
+local TeleportService=game:GetService( "TeleportService" )
+local o=e.LocalPlayer
+local Window=nil
+local currentLang="EN"
+local executorCheckCaller=typeof(checkcaller)=="function" and checkcaller or function() return false end
+local safeNewCClosure=typeof(newcclosure)=="function" and newcclosure or function(fn) return fn end
+local V=game:GetService( "ProximityPromptService" )pcall(function(...) V.PromptButtonHoldBegan :Connect(function(e,...) pcall(function(...)
+            if typeof(fireproximityprompt)== "function" then
+                fireproximityprompt(e)
+            end
+        end
+        )
+    end
+    )
+end
+)
+local H=function(...)
+end
+local t=function(...)
+end
+local s=nil pcall(function(...) s=require((j:WaitForChild( "Client" , 5 )):WaitForChild( "EggState" , 5 ))
+end
+)
+if not s then
+    pcall(function(...) s=require(j.Client.EggState )
+    end
+    )
+end
+local p=nil pcall(function(...) p=require(((j:WaitForChild( "Shared" , 5 )):WaitForChild( "Util" , 5 )):WaitForChild( "AssetItems" , 5 ))
+end
+)
+if not p then
+    pcall(function(...) p=require(j.Shared.Util .AssetItems )
+    end
+    )
+end
+local B=nil pcall(function(...) B=require((j:WaitForChild( "Shared" , 5 )):WaitForChild( "Remotes" , 5 ))
+end
+)
+if not B then
+    pcall(function(...) B=require(j.Shared.Remotes )
+    end
+    )
+end
+local function J(e,r,...)
+    local y=(j:FindFirstChild( "Packages" )and j.Packages :FindFirstChild( "Networking" ))or j:FindFirstChild( "Network" )or j
+    local u=y:FindFirstChild(e)or j:FindFirstChild(e)
+    if u then
+        return u
+    end
+    local w=y:FindFirstChild(e, true )or j:FindFirstChild(e, true )
+    if w then
+        return w
+    end
+    if r then
+        local e=y:FindFirstChild(r)or j:FindFirstChild(r)
+        if e then
+            return e
+        end
+        local u=y:FindFirstChild(r, true )or j:FindFirstChild(r, true )
+        if u then
+            return u
+        end
+    end
+    local k=string.match (e, "[^/]+$" )
+    if k then
+        local e=y:FindFirstChild(k, true )or j:FindFirstChild(k, true )
+        if e then
+            return e
+        end
+    end
+    return nil
+end
+
+local K=J( "RF/EggWorld/AskPlaceEgg" , "AskPlaceEgg" ) 
+local c=J( "RF/EggWorld/AskLiveSnapshot" , "AskLiveSnapshot" ) 
+local v=J( "RF/Homestead/AskState" , "RF/Plots/AskState" )or J( "AskState" )
+local i=J( "RF/EggWorld/AskFieldEggCarry" , "AskFieldEggCarry" ) 
+local R=J( "RF/EggWorld/AskFieldEggSnapshot" , "AskFieldEggSnapshot" )or J( "Eggs: RequestAreaEggSnapshot" , "RequestAreaEggSnapshot" )
+local g=J( "RF/EggWorld/AskHatch" , "AskHatch" )or J( "Eggs: RequestHatchEgg" )
+local Q=J( "RF/EggWorld/AskFinishHatch" , "AskFinishHatch" )or J( "Eggs: RequestCompleteHatchEgg" )
+local P=J( "RE/GuardPatrol/ForestStrike" , "ForestStrike" )or(B and(B.GuardPatrol and B.GuardPatrol.ForestStrike ))
+local N=J( "SpeedTollOffer" , "RE/GuardPatrol/SpeedTollOffer" )or(B and(B.GuardPatrol and B.GuardPatrol.SpeedTollOffer ))
+local U=J( "RF/Treadmill/AskDoff" , "AskDoff" )
+local l=J( "RF/Treadmill/AskDon" , "AskDon" )or J( "RF/Treadmill/AskMount" , "AskMount" )
+local D=J( "RF/Treadmill/AskTierRaise" , "Treadmills: RequestUpgrade" , "AskTierRaise" )
+local C=J( "RF/Trailwear/AskPurchase" , "Trailwear: RequestPurchase" , "AskPurchase" )
+local q=J( "RF/Trailwear/AskChoose" , "Trailwear: RequestEquip" , "AskChoose" )
+local n=J( "RF/Trailwear/AskDoff" , "Trailwear: RequestUnequip" , "AskDoff" )H(string.format ( "[RemoteCheck] Carry: %s | Snapshot: %s | Place: %s | Hatch: %s | FinishHatch: %s | Strike: %s | Toll: %s | Doff: %s" ,tostring(i~=nil),tostring(R~=nil),tostring(K~=nil),tostring(g~=nil),tostring(Q~=nil),tostring(P~=nil),tostring(N~=nil),tostring(U~=nil)))
+
+local f={[ "Light Dark" ]= 1300 ,[ "LightDark" ]= 1300 ;
+[ "Titan Temple" ]= 1100 ,[ "Cherry Blossom" ]= 1000 ,[ "Cosmic" ]= 900 ;
+[ "Prehistoric" ]= 800 ;
+[ "Abyss Ocean" ]= 700 ,[ "Volcano" ]= 600 ;
+[ "Snow" ]= 500 ,[ "Jungle" ]= 400 ;
+[ "Desert" ]= 300 ,[ "Lake" ]= 200 ;
+[ "Forest" ]= 100 }
+local M={ "Light Dark" ;
+"Titan Temple" ;
+"Cherry Blossom" , "Cosmic" ;
+"Prehistoric" , "Abyss Ocean" ;
+"Volcano" ;
+"Snow" , "Jungle" , "Desert" , "Lake" ;
+"Forest" }
+local I={[ "Light Dark" ]= 420 ,[ "LightDark" ]= 420 ;
+[ "Titan Temple" ]= 380 ,[ "Cherry Blossom" ]= 330 ,[ "Cosmic" ]= 280 ;
+[ "Prehistoric" ]= 240 ,[ "Abyss Ocean" ]= 200 ;
+[ "Volcano" ]= 180 ;
+[ "Snow" ]= 160 ,[ "Jungle" ]= 140 ;
+[ "Desert" ]= 130 ,[ "Lake" ]= 125 ,[ "Forest" ]= 125 }
+local L= -360
+local E= 525
+local b= 620
+local A= 130
+local S=CFrame.new ( 4773.7587890625 , 70.392112731934 , -315.73501586914 )
+
+local Z= "DiceHub_FlightSpeed.txt"
+local z= "DiceHub_EggSelectConfig.json"
+local d={[ "Light Dark" ]=Color3.fromRGB ( 168 , 85 , 247 ),[ "Titan Temple" ]=Color3.fromRGB ( 245 , 158 , 11 );
+[ "Cherry Blossom" ]=Color3.fromRGB ( 236 , 72 , 153 );
+[ "Cosmic" ]=Color3.fromRGB ( 6 , 182 , 212 ),[ "Prehistoric" ]=Color3.fromRGB ( 16 , 185 , 129 ),[ "Abyss Ocean" ]=Color3.fromRGB ( 59 , 130 , 246 );
+[ "Volcano" ]=Color3.fromRGB ( 239 , 68 , 68 ),[ "Snow" ]=Color3.fromRGB ( 147 , 197 , 253 ),[ "Jungle" ]=Color3.fromRGB ( 34 , 197 , 94 ),[ "Desert" ]=Color3.fromRGB ( 234 , 179 , 8 ),[ "Lake" ]=Color3.fromRGB ( 20 , 184 , 166 ),[ "Forest" ]=Color3.fromRGB ( 22 , 163 , 74 )}
+
+local X={ "Divine" , "Eternal" , "Secret" ;
+"Cosmic" , "Mythic" , "Legendary" ;
+"Epic" ;
+"Rare" ;
+"Uncommon" ;
+"Common" }
+local G={[ "Divine" ]=Color3.fromRGB ( 244 , 63 , 94 );
+[ "Eternal" ]=Color3.fromRGB ( 217 , 70 , 239 ),[ "Secret" ]=Color3.fromRGB ( 249 , 115 , 22 ),[ "Cosmic" ]=Color3.fromRGB ( 6 , 182 , 212 ),[ "Mythic" ]=Color3.fromRGB ( 139 , 92 , 246 ),[ "Legendary" ]=Color3.fromRGB ( 251 , 191 , 36 );
+[ "Epic" ]=Color3.fromRGB ( 168 , 85 , 247 );
+[ "Rare" ]=Color3.fromRGB ( 59 , 130 , 246 );
+[ "Uncommon" ]=Color3.fromRGB ( 34 , 197 , 94 ),[ "Common" ]=Color3.fromRGB ( 148 , 163 , 184 )}
+local F={[ "Divine" ]= 6 ;
+[ "Eternal" ]= 5 ;
+[ "Secret" ]= 4 ,[ "Cosmic" ]= 3 ;
+[ "Mythic" ]= 2 ;
+[ "Legendary" ]= 1 ,[ "Epic" ]= 0.5 ,[ "Rare" ]= 0.3 ,[ "Uncommon" ]= 0.1 ;
+[ "Common" ]= 0 }
+local h
+local function O(...)
+    local e= 600 pcall(function(...)
+        local r= false
+        if isfile then
+            r=isfile(Z)
+        elseif readfile then
+            local e,y=pcall(readfile,Z)r=e and(y~=nil)
+        end
+        if r and readfile then
+            local r=readfile(Z)
+            local u=tonumber(r)
+            if u and(u>= 100 and u<= 1000 )then
+                e=math.floor (u)
+            end
+        end
+    end
+    )
+    return e
+end
+local function Y(e,...) pcall(function(...)
+        if writefile then
+            local y=math.clamp (math.floor (tonumber(e)or 600 ), 100 , 1000 )writefile(Z,tostring(y))
+        end
+    end
+    )
+end
+local function T(...)
+    local e=nil pcall(function(...)
+        local r= false
+        if isfile then
+            r=isfile(z)
+        elseif readfile then
+            local e,y=pcall(readfile,z)r=e and(y~=nil)
+        end
+        if r and(readfile and a)then
+            local r=readfile(z)
+            if r and r~= "" then
+                local u=a:JSONDecode(r)
+                if type(u)== "table" then
+                    e=u
+                end
+            end
+        end
+    end
+    )
+    local r={[ "Light Dark" ]= true ,[ "Titan Temple" ]= true ,[ "Cherry Blossom" ]= true ;
+    [ "Cosmic" ]= false ;
+    [ "Prehistoric" ]= false ,[ "Abyss Ocean" ]= false ;
+    [ "Volcano" ]= false ,[ "Snow" ]= false ;
+    [ "Jungle" ]= false ,[ "Desert" ]= false ;
+    [ "Lake" ]= false ,[ "Forest" ]= false }
+    local y={[ "Divine" ]= true ,[ "Eternal" ]= true ,[ "Secret" ]= true ,[ "Cosmic" ]= true ,[ "Mythic" ]= true ;
+    [ "Legendary" ]= false ,[ "Epic" ]= false ,[ "Rare" ]= false ;
+    [ "Uncommon" ]= false ;
+    [ "Common" ]= false }
+    if type(e)~= "table" then
+        e={[ "selectedZones" ]=r;
+        [ "selectedRarities" ]=y,[ "alwaysCollectSecretPlus" ]= true ,[ "minRarityTier" ]= 2 ;
+        [ "autoTreadmill" ]= true ;
+        [ "autoUpgradeTreadmill" ]= true ,[ "autoBuyTrails" ]= true ;
+        [ "hideNotEnoughMoney" ]= true ;
+        [ "performanceMode" ]= false ,[ "disable3D" ]= false ,[ "antiAFK" ]= true ,[ "language" ]= "EN" }
+    else
+        if type(e.selectedZones )~= "table" then
+            e.selectedZones =r
+        end
+        if type(e.selectedRarities )~= "table" then
+            e.selectedRarities =y
+        else
+            for r,w in ipairs(X)do
+                if e.selectedRarities [w]==nil then
+                    e.selectedRarities [w]=(y[w]== true )
+                end
+            end
+        end
+        if e.alwaysCollectSecretPlus ==nil then
+            e.alwaysCollectSecretPlus = true
+        end
+        if e.minRarityTier ==nil then
+            e.minRarityTier = 2
+        end
+        if e.autoTreadmill ==nil then
+            e.autoTreadmill = true
+        end
+        if e.autoUpgradeTreadmill ==nil then
+            e.autoUpgradeTreadmill = true
+        end
+        if e.autoBuyTrails ==nil then
+            e.autoBuyTrails = true
+        end
+        if e.hideNotEnoughMoney ==nil then
+            e.hideNotEnoughMoney = true
+        end
+        if e.performanceMode ==nil then
+            e.performanceMode = false
+        end
+        if e.disable3D ==nil then
+            e.disable3D = false
+        end
+        if e.antiAFK ==nil then
+            e.antiAFK = true
+        end
+        if e.language and((e.language == "EN" or e.language == "TH" ))then
+            currentLang=e.language
+        end
+    end
+    return e
+end
+local function x(...) pcall(function(...)
+        if writefile and(a and h)then
+            local r={[ "selectedZones" ]=h.selectedZones or{};
+            [ "selectedRarities" ]=h.selectedRarities or{};
+            [ "alwaysCollectSecretPlus" ]=(h.alwaysCollectSecretPlus ~= false ),[ "minRarityTier" ]=h.minRarityTier or 2 ,[ "autoTreadmill" ]=(h.autoTreadmill == true );
+            [ "autoUpgradeTreadmill" ]=(h.autoUpgradeTreadmill == true ),[ "autoBuyTrails" ]=(h.autoBuyTrails == true );
+            [ "hideNotEnoughMoney" ]=(h.hideNotEnoughMoney == true );
+            [ "performanceMode" ]=(h.performanceMode == true );
+            [ "disable3D" ]=(h.disable3D == true );
+            [ "antiAFK" ]=(h.antiAFK == true );
+            [ "language" ]=currentLang or "EN" }
+            local y=a:JSONEncode(r)writefile(z,y)
+        end
+    end
+    )
+end
+local W=T()h={[ "godmode" ]= true ,[ "autoGlide" ]= true ,[ "autoHatch" ]= true ;
+[ "autoPlaceEvery5" ]= false ;
+[ "batchStealCount" ]= 0 ,[ "isBatchPlacing" ]= false ,[ "isHatching" ]= false ;
+[ "autoFarmLoop" ]= false ,[ "pureTweenFarm" ]= false ;
+[ "glidingToTarget" ]= false ;
+[ "securingEgg" ]= false ,[ "glideSpeed" ]=O();
+[ "selectedZones" ]=W.selectedZones ;
+[ "selectedRarities" ]=W.selectedRarities ;
+[ "alwaysCollectSecretPlus" ]=W.alwaysCollectSecretPlus ,[ "minRarityTier" ]=W.minRarityTier ,[ "autoTreadmill" ]=(W.autoTreadmill ~= false );
+[ "autoUpgradeTreadmill" ]=(W.autoUpgradeTreadmill ~= false ),[ "autoBuyTrails" ]=(W.autoBuyTrails ~= false ),[ "hideNotEnoughMoney" ]= true ;
+[ "performanceMode" ]=(W.performanceMode == true ),[ "disable3D" ]=(W.disable3D == true ),[ "antiAFK" ]=(W.antiAFK ~= false ),[ "onTreadmill" ]= false ,[ "lastTreadmillMount" ]= 0 ,[ "laneZ" ]= -360 ,[ "swapped" ]= false ;
+[ "teleporting" ]= false ,[ "isReturning" ]= false ;
+[ "delivering" ]= false ,[ "holdingEggForGuard" ]= false ,[ "currentTargetModel" ]=nil,[ "targetPosition" ]=nil;
+[ "stateTime" ]=os.clock (),[ "statusText" ]= "Ready" ,[ "bestEggInfo" ]= "Scanning..." ;
+[ "gui" ]=nil;
+[ "alive" ]= true ,[ "plot" ]=nil;
+[ "pen" ]=nil,[ "origin" ]=nil;
+[ "tread" ]=nil}
+local m
+local e4
+local r4
+local y4
+local u4
+local w4
+local j4
+local k4
+local a4
+local o4
+local V4
+local H4
+local t4
+local s4
+local p4
+local B4
+local J4
+local K4
+local c4
+local v4
+local i4
+local R4
+local g4
+local Q4
+local P4
+local N4
+local U4
+local l4
+local D4
+local C4
+local q4
+local n4
+local f4
+local M4
+local I4
+local L4
+local E4
+local b4
+local A4
+local S4
+local Z4
+local z4
+local d4
+local X4={}
+local G4= 0
+local F4=nil
+local h4
+local O4= 0
+local Y4= "NONE"
+local T4
+local x4=nil
+local W4=nil pcall(function(...)
+    local e=game:GetService( "Lighting" );
+    (e:GetPropertyChangedSignal( "ClockTime" )):Connect(function(...) X4={}G4= 0
+    end
+    )
+end
+)pcall(function(...)
+    local function e(e,...)
+        if e:IsA( "RemoteEvent" )then
+            local y=string.lower (e.Name )
+            if string.find (y, "reset" )or string.find (y, "night" )or string.find (y, "spawn" )or string.find (y, "countdown" )then
+                pcall(function(...) e.OnClientEvent :Connect(function(...) X4={}G4= 0
+                    end
+                    )
+                end
+                )
+            end
+        end
+    end
+    for y,u in ipairs(j:GetDescendants())do
+        e(u)
+    end
+    j.DescendantAdded :Connect(e)
+end
+)m=function(e,...)
+    if not e or not e:IsA( "Tool" )then
+        return false
+    end
+    local r=string.lower (e.Name )
+    if string.find (r, "sword" )or string.find (r, "radar" )or string.find (r, "basket" )or string.find (r, "punch" )then
+        return false
+    end
+    if e:GetAttribute( "EggUid" )or e:GetAttribute( "UID" )or string.find (r, "egg" )or e:GetAttribute( "Category" )or e:GetAttribute( "ItemType" )== "Egg" then
+        return true
+    end
+    return false
+end
+e4=function(...)
+    local e=o.Character
+    if e then
+        for e,y in ipairs(e:GetChildren())do
+            if m(y)then
+                local e=y:GetAttribute( "UID" )or y:GetAttribute( "EggUid" )
+                return y,e or y.Name
+            end
+        end
+    end
+    return nil,nil
+end
+r4=function(...)
+    local e=o:FindFirstChild( "Backpack" )
+    if e then
+        for e,y in ipairs(e:GetChildren())do
+            if m(y)then
+                local e=y:GetAttribute( "UID" )or y:GetAttribute( "EggUid" )
+                return y,e or y.Name
+            end
+        end
+    end
+    return nil,nil
+end
+y4=function(...)
+    local e= 0
+    local r=o:FindFirstChild( "Backpack" )
+    if r then
+        for r,y in ipairs(r:GetChildren())do
+            if m(y)then
+                e=e+ 1
+            end
+        end
+    end
+    local y=o.Character
+    if y then
+        for r,y in ipairs(y:GetChildren())do
+            if m(y)then
+                e=e+ 1
+            end
+        end
+    end
+    return e
+end
+u4=function(e,...)
+    if not e and not((h.pureTweenFarm or h.autoFarmLoop or h.teleporting ))then
+        return
+    end
+    local r=o.Character
+    local y=r and r:FindFirstChildOfClass( "Humanoid" )
+    local u=o:FindFirstChild( "Backpack" )
+    if y then
+        pcall(function(...) y:UnequipTools()
+        end
+        )
+    end
+    if r and u then
+        for e,r in ipairs(r:GetChildren())do
+            if r:IsA( "Tool" )then
+                pcall(function(...) r.Parent =u
+                end
+                )
+            end
+        end
+    end
+end
+w4=function(e,...)
+    if((h.pureTweenFarm or h.autoFarmLoop ))and not h.holdingEggForGuard then
+        local e=e4()
+        if e then
+            pcall(u4)
+        end
+        return false
+    end
+    local r,y=e4()
+    if r then
+        if e then
+            if y==e or not y then
+                return true
+            end
+        else
+            return true
+        end
+    end
+    local u=o.Character
+    local w=u and u:FindFirstChild( "HumanoidRootPart" )
+    if w and w.Position.X <=(E+ 15 )then
+        return false
+    end
+    if s and s.ReadFieldEggs then
+        local r,y=pcall(s.ReadFieldEggs )
+        if r and(y and y.Records )then
+            for r,y in ipairs(y.Records )do
+                if((y.State == "Carried" or y.State == 2 ))and((y.CarrierUserId ==o.UserId or y.Carrier ==o.UserId ))then
+                    if e then
+                        if y.Uid ==e then
+                            return true
+                        end
+                    else
+                        return true
+                    end
+                end
+            end
+        end
+    end
+    return false
+end
+j4=function(e,...)
+    local r,y=e4()
+    if r then
+        if not e or y==e or not y then
+            return true
+        end
+    end
+    local u=o:FindFirstChild( "Backpack" )
+    if u then
+        for r,y in ipairs(u:GetChildren())do
+            if m(y)then
+                local r=y:GetAttribute( "UID" )or y:GetAttribute( "EggUid" )
+                if not e or r==e or y.Name ==tostring(e)then
+                    return true
+                end
+            end
+        end
+    end
+    if e and(s and s.ReadFieldEggs )then
+        local r,y=pcall(s.ReadFieldEggs )
+        if r and(y and y.Records )then
+            for r,y in ipairs(y.Records )do
+                if y.Uid ==e then
+                    if(y.State == "Carried" or y.State == 2 )then
+                        local e=y.CarrierUserId or y.Carrier
+                        if e==o.UserId then
+                            return true
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return false
+end
+local m4= false
+local function ek(...)
+    if m4 then
+        return
+    end
+    local e=R or j:FindFirstChild( "RF/EggWorld/AskFieldEggSnapshot" , true )or j:FindFirstChild( "AskFieldEggSnapshot" , true )or j:FindFirstChild( "Eggs: RequestAreaEggSnapshot" , true )
+    if not e or not e:IsA( "RemoteFunction" )then
+        return
+    end
+    m4= true task.spawn (function(...)
+        local r,y=pcall(function(...)
+            return e:InvokeServer()
+        end
+        )
+        if r and type(y)== "table" then
+            local e={}
+            local r=y.Records or y
+            if type(r)== "table" then
+                for r,y in pairs(r)do
+                    if type(y)== "table" then
+                        if not y.Uid and type(r)== "string" then
+                            y.Uid =r
+                        end
+                        table.insert (e,y)
+                    end
+                end
+            end
+            if#e> 0 then
+                F4=e G4=os.clock ()
+            end
+        end
+        m4= false
+    end
+    )
+end
+task.spawn (function(...)
+    while true do
+        task.wait ( 1.5 )pcall(ek)
+    end
+end
+)function h4(e,...)
+    local y=os.clock ()
+    if e or(y-G4>= 1.5 )or not F4 then
+        ek()
+    end
+    local u=((F4 and#F4> 0 ))and F4 or nil
+    local w=nil
+    if s and s.ReadFieldEggs then
+        local e,r=pcall(s.ReadFieldEggs )
+        if e and type(r)== "table" then
+            local e={}
+            local y=r.Records or r
+            if type(y)== "table" then
+                for r,y in pairs(y)do
+                    if type(y)== "table" then
+                        if not y.Uid and type(r)== "string" then
+                            y.Uid =r
+                        end
+                        table.insert (e,y)
+                    end
+                end
+            end
+            if#e> 0 then
+                w=e
+            end
+        end
+    end
+    local j={}
+    local k={}
+    if u then
+        for e,r in ipairs(u)do
+            if r.Uid then
+                k[r.Uid ]= true table.insert (j,r)
+            end
+        end
+    end
+    if w then
+        for e,r in ipairs(w)do
+            if r.Uid and not k[r.Uid ]then
+                k[r.Uid ]= true table.insert (j,r)
+            end
+        end
+    end
+    local a=r:FindFirstChild( "AreaEggSlotsClient" )
+    if a then
+        for e,r in ipairs(a:GetChildren())do
+            local y=r.Name
+            if y and y~= "" then
+                local e=r:GetPivot()
+                local u=e.Position
+                if u.X >= 530 and not string.find (tostring(y), "First
